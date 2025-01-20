@@ -1,3 +1,5 @@
+pub mod win;
+
 #[tauri::command]
 fn log(text: &str) {
     println!("{text}");
@@ -30,11 +32,23 @@ fn get_default_components() -> Vec<String> {
     ]
 }
 
-#[cfg_attr(mobile, tauri::mobile_entry_point)]
-pub fn run() {
+fn inner_run() -> anyhow::Result<()> {
+    let username = win::get_username().map_err(|_| anyhow::anyhow!("Failed to get username"))?;
+    // win::message_box(&username, "Win11 Teaks");
+
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![log, get_default_components])
         .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .map_err(|_| anyhow::anyhow!("error while running tauri application"))?;
+
+    Ok(())
+}
+
+#[cfg_attr(mobile, tauri::mobile_entry_point)]
+pub fn run() {
+    match inner_run() {
+        Ok(_) => (),
+        Err(e) => win::message_box(e.to_string(), "Win11 Tweaks"),
+    }
 }
