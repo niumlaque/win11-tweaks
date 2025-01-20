@@ -1,0 +1,75 @@
+/* General styling */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  overflow: auto;
+  /* Remove body scrollbars */
+}
+
+.scrollable {
+  position: absolute;
+  /* Allow container to adapt to content size */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  min-width: 800px;
+  /* Set minimum width */
+  min-height: 600px;
+  /* Set minimum height */
+  margin: auto;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  overflow: auto;
+  /* Enable scrollbars within the scrollable container */
+  box-sizing: border-box;
+  padding: 16px;
+}
+
+/* Styling for each group */
+.group {
+  margin-bottom: 20px;
+  padding: 16px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background-color: #fafafa;
+}
+
+.group h2 {
+  margin: 0 0 12px 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.group-content {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.group-content input {
+  flex: 1;
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #eee;
+}
+
+.group-content button {
+  padding: 8px 12px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  background-color: #007bff;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.group-content button:hover {
+  background-color: #0056b3;
+}
