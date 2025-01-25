@@ -1,3 +1,4 @@
+use std::num::ParseIntError;
 use windows::Win32::Foundation::WIN32_ERROR;
 use windows::Win32::System::Registry::REG_VALUE_TYPE;
 
@@ -10,6 +11,7 @@ pub enum Error {
     SubkeyNotFound(String),
     UnknownDataType(REG_VALUE_TYPE),
     UnexpectedDataType((&'static str, &'static str)), // expected, actual
+    ParseIntError(ParseIntError),
 }
 
 impl std::error::Error for Error {}
@@ -26,6 +28,13 @@ impl std::fmt::Display for Error {
                     "Unexpected data type (expected: {expected}, actual: {actual})"
                 )
             }
+            Self::ParseIntError(e) => e.fmt(f),
         }
+    }
+}
+
+impl From<ParseIntError> for Error {
+    fn from(value: ParseIntError) -> Self {
+        Error::ParseIntError(value)
     }
 }

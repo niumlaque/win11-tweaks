@@ -2,7 +2,9 @@ use super::{DataType, Error, Result};
 use windows::core::HSTRING;
 use windows::Win32::Foundation::ERROR_SUCCESS;
 use windows::Win32::System::Registry::REG_SAM_FLAGS;
-use windows::Win32::System::Registry::{RegCloseKey, RegOpenKeyExW, RegQueryValueExW};
+use windows::Win32::System::Registry::{
+    RegCloseKey, RegOpenKeyExW, RegQueryValueExW, RegSetValueExW,
+};
 use windows::Win32::System::Registry::{HKEY, REG_VALUE_TYPE};
 
 pub(super) struct KeyHandler {
@@ -79,6 +81,36 @@ impl KeyHandler {
         }
 
         Ok(buf)
+    }
+
+    pub fn set_dword(&self, value_name: &str, value: u32) -> Result<()> {
+        let vi = self.get_value_info(value_name)?;
+        if vi.data_type() != DataType::DWord {
+            return Err(Error::UnexpectedDataType((
+                "REG_DWORD",
+                vi.data_type().str(),
+            )));
+        }
+
+        let buf = value.to_ne_bytes();
+        self.set_value(value_name, &vi, &buf)
+    }
+
+    fn set_value(&self, value_name: &str, vi: &ValueInfo, buffer: &[u8]) -> Result<()> {
+        unsafe {
+            let ret = RegSetValueExW(
+                self.key,
+                &HSTRING::from(value_name),
+                0,
+                vi.data_type().value(),
+                Some(buffer),
+            );
+
+            if ret != ERROR_SUCCESS {
+                return Err(Error::Win32Error(ret));
+            }
+        }
+        Ok(())
     }
 }
 

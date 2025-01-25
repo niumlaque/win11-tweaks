@@ -97,8 +97,8 @@ fn get_registry_value(cmd_id: u64) {
     if let Some(cmd) = COMMAND_MAP.get(&cmd_id) {
         let r = Registry::new(cmd.def.root(), &cmd.def.sub_key, &cmd.def.value_name);
         match r.get_value(cmd.def.data_type) {
-            Ok(v) => win::message_box(v.to_string(), "Win11 Tweaks"),
-            Err(e) => win::message_box(e.to_string(), "Win11 Tweaks"),
+            Ok(v) => win::message_box(format!("現在の値: {v}"), "Win11 Tweaks"),
+            Err(e) => win::message_box(format!("Win32 Error: {e}"), "Win11 Tweaks"),
         }
     } else {
         win::message_box("コマンドが見つかりませんでした", "Win11 Tweaks");
@@ -107,8 +107,17 @@ fn get_registry_value(cmd_id: u64) {
 
 #[tauri::command]
 fn set_registry_value(cmd_id: u64, value: &str) {
-    // not implemented
+    use win::reg::Registry;
     println!("set_registry_value: Command ID={cmd_id}, Value={value}");
+    if let Some(cmd) = COMMAND_MAP.get(&cmd_id) {
+        let r = Registry::new(cmd.def.root(), &cmd.def.sub_key, &cmd.def.value_name);
+        match r.set_value(cmd.def.data_type, value) {
+            Ok(_) => (),
+            Err(e) => win::message_box(format!("Win32 Error: {e}"), "Win11 Tweaks"),
+        }
+    } else {
+        win::message_box("コマンドが見つかりませんでした", "Win11 Tweaks");
+    }
 }
 
 fn inner_run() -> anyhow::Result<()> {

@@ -1,7 +1,7 @@
 use super::key_handler::KeyHandler;
 use super::{DataType, Result, Value};
 use windows::Win32::System::Registry::HKEY;
-use windows::Win32::System::Registry::KEY_READ;
+use windows::Win32::System::Registry::{KEY_READ, KEY_WRITE};
 
 pub struct Registry {
     root: HKEY,
@@ -30,5 +30,22 @@ impl Registry {
     pub fn get_dword(&self) -> Result<u32> {
         let handler = KeyHandler::open(self.root, &self.sub_key, KEY_READ)?;
         handler.get_dword(&self.value_name)
+    }
+
+    pub fn set_value(&self, data_type: DataType, value: &str) -> Result<()> {
+        match data_type {
+            DataType::DWord => {
+                let value = value.parse::<u32>()?;
+                self.set_dword(value)?;
+            }
+            _ => unimplemented!(),
+        }
+
+        Ok(())
+    }
+
+    pub fn set_dword(&self, value: u32) -> Result<()> {
+        let handler = KeyHandler::open(self.root, &self.sub_key, KEY_WRITE | KEY_READ)?;
+        handler.set_dword(&self.value_name, value)
     }
 }
