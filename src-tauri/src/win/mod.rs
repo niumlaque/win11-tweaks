@@ -1,4 +1,6 @@
+pub mod reg;
 use windows::core::*;
+pub use windows::Win32::System::Registry::REG_DWORD;
 use windows::Win32::System::WindowsProgramming::GetUserNameW;
 use windows::Win32::UI::WindowsAndMessaging::*;
 
