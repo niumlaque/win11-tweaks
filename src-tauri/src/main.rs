@@ -14,6 +14,18 @@ static COMMAND_LIST: LazyLock<Vec<Command>> = LazyLock::new(|| {
     let mut cm = CommandManager::default();
     let mut cmds = Vec::with_capacity(8);
     cmds.push(cm.gen(
+        "エクスプローラの右クリックメニュー",
+        R::hkcu(
+            r"Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32",
+            "",
+            DataType::String,
+        ),
+        vec![
+            V::new("", "(空文字)  従来のメニュー"),
+            V::new("*", "TODO: Windows11 のメニュー"),
+        ],
+    ));
+    cmds.push(cm.gen(
         "スタートメニュー位置",
         R::hkcu(
             r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
@@ -98,7 +110,7 @@ fn get_registry_value(cmd_id: u64) {
         let r = Registry::new(cmd.def.root(), &cmd.def.sub_key, &cmd.def.value_name);
         match r.get_value(cmd.def.data_type) {
             Ok(v) => win::message_box(format!("現在の値: {v}"), "Win11 Tweaks"),
-            Err(e) => win::message_box(format!("Win32 Error: {e}"), "Win11 Tweaks"),
+            Err(e) => win::message_box(format!("{e}"), "Win11 Tweaks"),
         }
     } else {
         win::message_box("コマンドが見つかりませんでした", "Win11 Tweaks");

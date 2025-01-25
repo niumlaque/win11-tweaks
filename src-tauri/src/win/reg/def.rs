@@ -6,6 +6,25 @@ pub enum Root {
     CurrentUser,
 }
 
+impl std::fmt::Display for Root {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let root = match self {
+            Root::CurrentUser => "HKCU",
+        };
+
+        root.fmt(f)
+    }
+}
+
+impl From<HKEY> for Root {
+    fn from(value: HKEY) -> Self {
+        match value {
+            HKEY_CURRENT_USER => Self::CurrentUser,
+            _ => panic!(),
+        }
+    }
+}
+
 #[derive(Debug)]
 pub struct RegDef {
     pub root: Root,
@@ -46,10 +65,10 @@ impl RegDef {
 
 impl std::fmt::Display for RegDef {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let root = match self.root {
-            Root::CurrentUser => "HKCU",
-        };
-
-        write!(f, "{}\\{}\\{}", root, self.sub_key, self.value_name)
+        if self.value_name.is_empty() {
+            write!(f, "{}\\{}", self.root, self.sub_key)
+        } else {
+            write!(f, "{}\\{}\\{}", self.root, self.sub_key, self.value_name)
+        }
     }
 }

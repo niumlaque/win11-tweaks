@@ -19,4 +19,8 @@ anyhow = { version = "1.0.95", features = ["backtrace"] }
 
 [dependencies.windows]
 version = "0.58"
-features = ["Win32_Foundation", "Win32_UI_WindowsAndMessaging"]
+features = [
+    "Win32_Foundation",
+    "Win32_UI_WindowsAndMessaging",
+    "Win32_Security",
+]

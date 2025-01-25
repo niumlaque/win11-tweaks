@@ -21,6 +21,7 @@ impl Registry {
     pub fn get_value(&self, data_type: DataType) -> Result<Value> {
         let ret = match data_type {
             DataType::DWord => Value::DWord(self.get_dword()?),
+            DataType::String => Value::String(self.get_string()?),
             _ => unimplemented!(),
         };
 
@@ -32,11 +33,19 @@ impl Registry {
         handler.get_dword(&self.value_name)
     }
 
+    pub fn get_string(&self) -> Result<String> {
+        let handler = KeyHandler::open(self.root, &self.sub_key, KEY_READ)?;
+        handler.get_string(&self.value_name)
+    }
+
     pub fn set_value(&self, data_type: DataType, value: &str) -> Result<()> {
         match data_type {
             DataType::DWord => {
                 let value = value.parse::<u32>()?;
                 self.set_dword(value)?;
+            }
+            DataType::String => {
+                self.set_string(value)?;
             }
             _ => unimplemented!(),
         }
@@ -47,5 +56,10 @@ impl Registry {
     pub fn set_dword(&self, value: u32) -> Result<()> {
         let handler = KeyHandler::open(self.root, &self.sub_key, KEY_WRITE | KEY_READ)?;
         handler.set_dword(&self.value_name, value)
+    }
+
+    pub fn set_string(&self, value: &str) -> Result<()> {
+        let handler = KeyHandler::create_or_open(self.root, &self.sub_key, KEY_WRITE | KEY_READ)?;
+        handler.set_string(&self.value_name, value)
     }
 }
