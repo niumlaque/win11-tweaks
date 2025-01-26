@@ -43,6 +43,21 @@ static COMMAND_LIST: LazyLock<Vec<Command>> = LazyLock::new(|| {
         vec![V::new("1", "PC"), V::new("2", "ホーム")],
     ));
     cmds.push(cm.gen(
+        "ファイル拡張子",
+        R::hku(
+            format!(
+                "{}\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+                SID.as_str()
+            ),
+            "HideFileExt",
+            DataType::DWord,
+        ),
+        vec![
+            V::new("0", "登録された拡張子を表示する"),
+            V::new("1", "登録された拡張子を表示しない"),
+        ],
+    ));
+    cmds.push(cm.gen(
         "スタートメニュー位置",
         R::hkcu(
             r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
