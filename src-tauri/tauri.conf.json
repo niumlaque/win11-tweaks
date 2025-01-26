@@ -10,7 +10,7 @@
     "withGlobalTauri": true,
     "windows": [
       {
-        "title": "win11-tweaks",
+        "title": "Win11 Tweaks",
         "width": 800,
         "height": 600
       }

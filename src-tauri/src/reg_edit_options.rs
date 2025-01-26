@@ -59,8 +59,8 @@ pub fn default_edit_options() -> Vec<RegistryEditOption> {
             DataType::String,
         ),
         vec![
-            O::new("", "(空文字)  従来のメニュー"),
-            O::new("*", "TODO: Windows11 のメニュー"),
+            O::new("", "従来のメニュー"),
+            O::new("", "TODO: Windows11 のメニュー"),
         ],
     );
     b.push(
