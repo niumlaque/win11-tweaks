@@ -117,5 +117,15 @@ pub fn default_edit_options() -> Vec<RegistryEditOption> {
         ],
     );
 
+    b.push(
+        "タスクバータスクビュー非表示",
+        R::hkcu(
+            r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
+            "ShowTaskViewButton",
+            DataType::DWord,
+        ),
+        vec![O::new("0", "非表示"), O::new("1", "表示")],
+    );
+
     b.into_vec()
 }
