@@ -104,7 +104,6 @@ fn inner_run() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     match inner_run() {
         Ok(_) => (),
