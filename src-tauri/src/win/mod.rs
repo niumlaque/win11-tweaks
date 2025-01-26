@@ -1,3 +1,4 @@
+pub mod ps;
 pub mod reg;
 use windows::core::*;
 pub use windows::Win32::System::Registry::REG_DWORD;

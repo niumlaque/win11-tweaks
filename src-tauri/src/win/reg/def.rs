@@ -1,15 +1,17 @@
 use super::DataType;
-use windows::Win32::System::Registry::{HKEY, HKEY_CURRENT_USER};
+use windows::Win32::System::Registry::{HKEY, HKEY_CURRENT_USER, HKEY_USERS};
 
 #[derive(Debug)]
 pub enum Root {
     CurrentUser,
+    Users,
 }
 
 impl std::fmt::Display for Root {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let root = match self {
             Root::CurrentUser => "HKCU",
+            Root::Users => "HKU",
         };
 
         root.fmt(f)
@@ -20,6 +22,7 @@ impl From<HKEY> for Root {
     fn from(value: HKEY) -> Self {
         match value {
             HKEY_CURRENT_USER => Self::CurrentUser,
+            HKEY_USERS => Self::Users,
             _ => panic!(),
         }
     }
@@ -56,9 +59,18 @@ impl RegDef {
         Self::new(Root::CurrentUser, sub_key, value_name, data_type)
     }
 
+    pub fn hku(
+        sub_key: impl Into<String>,
+        value_name: impl Into<String>,
+        data_type: DataType,
+    ) -> Self {
+        Self::new(Root::Users, sub_key, value_name, data_type)
+    }
+
     pub fn root(&self) -> HKEY {
         match self.root {
             Root::CurrentUser => HKEY_CURRENT_USER,
+            Root::Users => HKEY_USERS,
         }
     }
 }

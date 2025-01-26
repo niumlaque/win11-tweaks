@@ -6,6 +6,11 @@ use std::sync::LazyLock;
 use win11_tweaks_lib::command::{Command, CommandManager};
 use win11_tweaks_lib::win;
 
+static SID: LazyLock<String> = LazyLock::new(|| {
+    let user = win::get_username().expect("Failed to get username");
+    win::ps::get_sid(&user).expect("Failed to get SID")
+});
+
 static COMMAND_LIST: LazyLock<Vec<Command>> = LazyLock::new(|| {
     use win::reg::DataType;
     use win::reg::RegDef as R;
@@ -24,6 +29,18 @@ static COMMAND_LIST: LazyLock<Vec<Command>> = LazyLock::new(|| {
             V::new("", "(空文字)  従来のメニュー"),
             V::new("*", "TODO: Windows11 のメニュー"),
         ],
+    ));
+    cmds.push(cm.gen(
+        "エクスプローラで開く",
+        R::hku(
+            format!(
+                "{}\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+                SID.as_str()
+            ),
+            "LaunchTo",
+            DataType::DWord,
+        ),
+        vec![V::new("1", "PC"), V::new("2", "ホーム")],
     ));
     cmds.push(cm.gen(
         "スタートメニュー位置",
