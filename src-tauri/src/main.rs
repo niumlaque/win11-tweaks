@@ -3,89 +3,14 @@
 
 use std::collections::HashMap;
 use std::sync::LazyLock;
-use win11_tweaks_lib::command::{Command, CommandManager};
+use win11_tweaks_lib::command::RegistryEditOption;
 use win11_tweaks_lib::win;
 
-static SID: LazyLock<String> = LazyLock::new(|| {
-    let user = win::get_username().expect("Failed to get username");
-    win::ps::get_sid(&user).expect("Failed to get SID")
-});
+static EDIT_OPT_LIST: LazyLock<Vec<RegistryEditOption>> =
+    LazyLock::new(win11_tweaks_lib::default_edit_options);
 
-static COMMAND_LIST: LazyLock<Vec<Command>> = LazyLock::new(|| {
-    use win::reg::DataType;
-    use win::reg::RegDef as R;
-    use win11_tweaks_lib::command::Value as V;
-
-    let mut cm = CommandManager::default();
-    let mut cmds = Vec::with_capacity(8);
-    cmds.push(cm.gen(
-        "エクスプローラの右クリックメニュー",
-        R::hkcu(
-            r"Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32",
-            "",
-            DataType::String,
-        ),
-        vec![
-            V::new("", "(空文字)  従来のメニュー"),
-            V::new("*", "TODO: Windows11 のメニュー"),
-        ],
-    ));
-    cmds.push(cm.gen(
-        "エクスプローラで開く",
-        R::hku(
-            format!(
-                "{}\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-                SID.as_str()
-            ),
-            "LaunchTo",
-            DataType::DWord,
-        ),
-        vec![V::new("1", "PC"), V::new("2", "ホーム")],
-    ));
-    cmds.push(cm.gen(
-        "ファイル拡張子",
-        R::hku(
-            format!(
-                "{}\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-                SID.as_str()
-            ),
-            "HideFileExt",
-            DataType::DWord,
-        ),
-        vec![
-            V::new("0", "登録された拡張子を表示する"),
-            V::new("1", "登録された拡張子を表示しない"),
-        ],
-    ));
-    cmds.push(cm.gen(
-        "スタートメニュー位置",
-        R::hkcu(
-            r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
-            "TaskbarAl",
-            DataType::DWord,
-        ),
-        vec![V::new("0", "左揃え"), V::new("1", "中央揃え")],
-    ));
-    cmds.push(cm.gen(
-        "タスクバー検索ボックス非表示",
-        R::hkcu(
-            r"SOFTWARE\Microsoft\Windows\CurrentVersion\Search",
-            "SearchBoxTaskbarMode",
-            DataType::DWord,
-        ),
-        vec![
-            V::new("0", "非表示"),
-            V::new("1", "検索アイコンのみ"),
-            V::new("2", "検索ボックス"),
-            V::new("3", "検索アイコンとラベル"),
-        ],
-    ));
-
-    cmds
-});
-
-static COMMAND_MAP: LazyLock<HashMap<u64, &Command>> = LazyLock::new(|| {
-    COMMAND_LIST.iter().fold(HashMap::new(), |mut acc, x| {
+static EDIT_OPT_MAP: LazyLock<HashMap<u64, &RegistryEditOption>> = LazyLock::new(|| {
+    EDIT_OPT_LIST.iter().fold(HashMap::new(), |mut acc, x| {
         acc.insert(x.id, x);
         acc
     })
@@ -96,7 +21,7 @@ fn log(text: &str) {
     println!("{text}");
 }
 
-fn get_component_html(cmd: &Command) -> String {
+fn get_component_html(cmd: &RegistryEditOption) -> String {
     let items = cmd
         .values
         .iter()
@@ -128,7 +53,7 @@ fn get_component_html(cmd: &Command) -> String {
 
 #[tauri::command]
 fn get_default_components() -> Vec<String> {
-    COMMAND_LIST
+    EDIT_OPT_LIST
         .iter()
         .map(get_component_html)
         .collect::<Vec<String>>()
@@ -138,7 +63,7 @@ fn get_default_components() -> Vec<String> {
 fn get_registry_value(cmd_id: u64) {
     use win::reg::Registry;
     println!("get_registry_value: Command ID={cmd_id}");
-    if let Some(cmd) = COMMAND_MAP.get(&cmd_id) {
+    if let Some(cmd) = EDIT_OPT_MAP.get(&cmd_id) {
         let r = Registry::new(cmd.def.root(), &cmd.def.sub_key, &cmd.def.value_name);
         match r.get_value(cmd.def.data_type) {
             Ok(v) => win::message_box(format!("現在の値: {v}"), "Win11 Tweaks"),
@@ -153,7 +78,7 @@ fn get_registry_value(cmd_id: u64) {
 fn set_registry_value(cmd_id: u64, value: &str) {
     use win::reg::Registry;
     println!("set_registry_value: Command ID={cmd_id}, Value={value}");
-    if let Some(cmd) = COMMAND_MAP.get(&cmd_id) {
+    if let Some(cmd) = EDIT_OPT_MAP.get(&cmd_id) {
         let r = Registry::new(cmd.def.root(), &cmd.def.sub_key, &cmd.def.value_name);
         match r.set_value(cmd.def.data_type, value) {
             Ok(_) => (),
