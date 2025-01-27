@@ -52,7 +52,7 @@ pub fn default_edit_options() -> Vec<RegistryEditOption> {
 
     let mut b = Builder::with_capacity(8);
     b.push(
-        "エクスプローラの右クリックメニュー",
+        "エクスプローラ - 右クリックメニュー",
         R::hkcu(
             r"Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32",
             "",
@@ -64,7 +64,7 @@ pub fn default_edit_options() -> Vec<RegistryEditOption> {
         ],
     );
     b.push(
-        "エクスプローラで開く",
+        "エクスプローラ - 起動画面",
         R::hku(
             format!(
                 "{}\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
@@ -103,7 +103,7 @@ pub fn default_edit_options() -> Vec<RegistryEditOption> {
     );
 
     b.push(
-        "タスクバー検索ボックス非表示",
+        "タスクバー - 検索ボックス非表示",
         R::hkcu(
             r"SOFTWARE\Microsoft\Windows\CurrentVersion\Search",
             "SearchBoxTaskbarMode",
@@ -118,7 +118,7 @@ pub fn default_edit_options() -> Vec<RegistryEditOption> {
     );
 
     b.push(
-        "タスクバータスクビュー非表示",
+        "タスクバー - タスクビュー非表示",
         R::hkcu(
             r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
             "ShowTaskViewButton",
