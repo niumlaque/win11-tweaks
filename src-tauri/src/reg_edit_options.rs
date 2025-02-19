@@ -77,7 +77,7 @@ pub fn default_edit_options() -> Vec<RegistryEditOption> {
     );
 
     b.push(
-        "ファイル拡張子",
+        "エクスプローラ - ファイル拡張子",
         R::hku(
             format!(
                 "{}\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
@@ -93,7 +93,7 @@ pub fn default_edit_options() -> Vec<RegistryEditOption> {
     );
 
     b.push(
-        "スタートメニュー位置",
+        "タスクバー - スタートメニュー位置",
         R::hkcu(
             r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
             "TaskbarAl",
@@ -103,7 +103,7 @@ pub fn default_edit_options() -> Vec<RegistryEditOption> {
     );
 
     b.push(
-        "タスクバー - 検索ボックス非表示",
+        "タスクバー - 検索ボックス",
         R::hkcu(
             r"SOFTWARE\Microsoft\Windows\CurrentVersion\Search",
             "SearchBoxTaskbarMode",
@@ -118,7 +118,7 @@ pub fn default_edit_options() -> Vec<RegistryEditOption> {
     );
 
     b.push(
-        "タスクバー - タスクビュー非表示",
+        "タスクバー - タスクビュー",
         R::hkcu(
             r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
             "ShowTaskViewButton",
@@ -126,6 +126,30 @@ pub fn default_edit_options() -> Vec<RegistryEditOption> {
         ),
         vec![O::new("0", "非表示"), O::new("1", "表示")],
     );
+    // HKU:\<SID>\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced -Name 'TaskbarMn' -Type 'DWord'
+    b.push(
+        "タスクバー - チャット",
+        R::hku(
+            format!(
+                "{}\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+                sid.as_str()
+            ),
+            "TaskbarMn",
+            DataType::DWord,
+        ),
+        vec![O::new("0", "非表示"), O::new("1", "表示")],
+    );
+
+    // 0x80070005: Access denied. why?
+    // b.push(
+    //     "タスクバー - ウィジェット非表示",
+    //     R::hkcu(
+    //         r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
+    //         "TaskbarDa",
+    //         DataType::DWord,
+    //     ),
+    //     vec![O::new("0", "非表示"), O::new("1", "表示")],
+    // );
 
     b.into_vec()
 }

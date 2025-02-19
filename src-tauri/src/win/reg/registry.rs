@@ -54,7 +54,7 @@ impl Registry {
     }
 
     pub fn set_dword(&self, value: u32) -> Result<()> {
-        let handler = KeyHandler::open(self.root, &self.sub_key, KEY_WRITE | KEY_READ)?;
+        let handler = KeyHandler::create_or_open(self.root, &self.sub_key, KEY_WRITE | KEY_READ)?;
         handler.set_dword(&self.value_name, value)
     }
 

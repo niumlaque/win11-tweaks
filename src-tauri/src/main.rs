@@ -82,7 +82,7 @@ fn set_registry_value(cmd_id: u64, value: &str) {
         let r = Registry::new(cmd.def.root(), &cmd.def.sub_key, &cmd.def.value_name);
         match r.set_value(cmd.def.data_type, value) {
             Ok(_) => (),
-            Err(e) => win::message_box(format!("Win32 Error: {e}"), "Win11 Tweaks"),
+            Err(e) => win::message_box(format!("{e}"), "Win11 Tweaks"),
         }
     } else {
         win::message_box("コマンドが見つかりませんでした", "Win11 Tweaks");

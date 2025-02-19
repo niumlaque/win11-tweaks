@@ -156,7 +156,8 @@ impl KeyHandler {
         }
 
         let buf = value.to_ne_bytes();
-        self.set_value(value_name, DataType::DWord, &buf)
+        self.set_value(value_name, DataType::DWord, &buf)?;
+        Ok(())
     }
 
     pub fn set_string(&self, value_name: &str, value: &str) -> Result<()> {
@@ -183,7 +184,11 @@ impl KeyHandler {
             );
 
             if ret != ERROR_SUCCESS {
-                return Err(Error::from(ret));
+                if check_no_key_error(ret) {
+                    return Err(Error::ValueNameNotFound(value_name.into()));
+                } else {
+                    return Err(Error::from(ret));
+                }
             }
         }
         Ok(())
