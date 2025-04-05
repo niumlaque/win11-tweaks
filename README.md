@@ -14,7 +14,8 @@
   * 検索ボックス
   * タスクビュー
   * チャット
-  * ~~ウィジェット非表示~~ (何故か Access Denied になるので現在非表示)
+  * ウィジェット非表示 (現在は何故か Access Denied になる)
+  * Windows Copilot (Preview) 非表示
 
 ## ビルド方法
 
