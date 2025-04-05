@@ -139,9 +139,8 @@ pub fn default_edit_options() -> Vec<RegistryEditOption> {
         vec![O::new("0", "非表示"), O::new("1", "表示")],
     );
 
-    // 0x80070005: Access denied. why?
     b.push(
-        "タスクバー - ウィジェット非表示 (現在エラー発生中)",
+        "タスクバー - ウィジェット非表示 (要管理者権限)",
         R::hkcu(
             r"SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced",
             "TaskbarDa",
